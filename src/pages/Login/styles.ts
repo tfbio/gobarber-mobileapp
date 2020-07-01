@@ -20,7 +20,7 @@ export const SubTitle = styled.Text`
   color: #f4ede8;
   font-family: 'RobotoSlab-Regular';
 
-  margin-bottom: 14px;
+  margin-bottom: 30px;
 `;
 
 export const ForgotPw = styled.TouchableOpacity`
