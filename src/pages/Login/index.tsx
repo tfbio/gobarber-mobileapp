@@ -1,14 +1,17 @@
 import React, { useCallback, useRef } from 'react';
+
 import {
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
   TextInput,
+  Alert,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { Form } from '@unform/mobile';
 import { FormHandles } from '@unform/core';
+import * as Yup from 'yup';
 
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import Icon from 'react-native-vector-icons/Feather';
@@ -17,6 +20,8 @@ import logo from '../../assets/logo.png';
 
 import Input from '../../components/input';
 import Button from '../../components/button';
+
+import getValidationError from '../../utils/getValidationErrors';
 
 import {
   Container,
@@ -28,14 +33,44 @@ import {
   CreateAccText,
 } from './styles';
 
+interface LoginFormData {
+  email: string;
+  password: string;
+}
+
 const Login: React.FC = () => {
   const nav = useNavigation();
   const formRef = useRef<FormHandles>(null);
 
   const passwordRef = useRef<TextInput>(null);
 
-  const handleLogin = useCallback((data: Object) => {
-    console.log(data);
+  const handleLogin = useCallback(async (data: LoginFormData) => {
+    try {
+      const schema = Yup.object().shape({
+        email: Yup.string()
+          .required('E-mail is required')
+          .email('Invalid e-mail'),
+        password: Yup.string().required('password is required'),
+      });
+
+      await schema.validate(data, {
+        abortEarly: false,
+      });
+
+      //await login({
+      //  email: data.email,
+      //  password: data.password,
+      //});
+    } catch (err) {
+      if (err instanceof Yup.ValidationError) {
+        const errors = getValidationError(err);
+        formRef.current?.setErrors(errors);
+
+        return;
+      }
+
+      Alert.alert('Login Error', 'A problem happened during login');
+    }
   }, []);
 
   return (
@@ -84,6 +119,7 @@ const Login: React.FC = () => {
             </ForgotPw>
           </Container>
         </ScrollView>
+
         <HideWithKeyboard>
           <CreateAccButton onPress={() => nav.navigate('SignUp')}>
             <Icon name="log-in" size={20} color="#ff9000" />
