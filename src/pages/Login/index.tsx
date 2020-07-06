@@ -15,6 +15,7 @@ import * as Yup from 'yup';
 
 import HideWithKeyboard from 'react-native-hide-with-keyboard';
 import Icon from 'react-native-vector-icons/Feather';
+import { useAuth } from '../../hooks/authContext';
 
 import logo from '../../assets/logo.png';
 
@@ -42,36 +43,41 @@ const Login: React.FC = () => {
   const nav = useNavigation();
   const formRef = useRef<FormHandles>(null);
 
+  const { login } = useAuth();
+
   const passwordRef = useRef<TextInput>(null);
 
-  const handleLogin = useCallback(async (data: LoginFormData) => {
-    try {
-      const schema = Yup.object().shape({
-        email: Yup.string()
-          .required('E-mail is required')
-          .email('Invalid e-mail'),
-        password: Yup.string().required('password is required'),
-      });
+  const handleLogin = useCallback(
+    async (data: LoginFormData) => {
+      try {
+        const schema = Yup.object().shape({
+          email: Yup.string()
+            .required('E-mail is required')
+            .email('Invalid e-mail'),
+          password: Yup.string().required('password is required'),
+        });
 
-      await schema.validate(data, {
-        abortEarly: false,
-      });
+        await schema.validate(data, {
+          abortEarly: false,
+        });
 
-      //await login({
-      //  email: data.email,
-      //  password: data.password,
-      //});
-    } catch (err) {
-      if (err instanceof Yup.ValidationError) {
-        const errors = getValidationError(err);
-        formRef.current?.setErrors(errors);
+        await login({
+          email: data.email,
+          password: data.password,
+        });
+      } catch (err) {
+        if (err instanceof Yup.ValidationError) {
+          const errors = getValidationError(err);
+          formRef.current?.setErrors(errors);
 
-        return;
+          return;
+        }
+
+        Alert.alert('Login Error', 'A problem happened during login');
       }
-
-      Alert.alert('Login Error', 'A problem happened during login');
-    }
-  }, []);
+    },
+    [login],
+  );
 
   return (
     <>

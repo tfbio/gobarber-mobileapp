@@ -51,6 +51,9 @@ const SignUp: React.FC = () => {
       });
 
       await api.post('/user', data);
+
+      Alert.alert('Account Created', 'You can login in your account now');
+      nav.goBack();
     } catch (err) {
       if (err instanceof Yup.ValidationError) {
         const errors = getValidationError(err);
@@ -58,6 +61,8 @@ const SignUp: React.FC = () => {
 
         return;
       }
+      console.log(err);
+
       Alert.alert(
         'Register Error',
         'A problem happened during account register',
