@@ -10,6 +10,7 @@ import api from '../services/api';
 
 interface AuthContextData {
   user: object;
+  loading: boolean;
   login(credentials: LoginCredentials): Promise<void>;
   logout(): void;
 }
@@ -30,6 +31,7 @@ export const AuthContext = createContext<AuthContextData>(
 
 export const AuthProvider: React.FC = ({ children }) => {
   const [data, setData] = useState<AuthState>({} as AuthState);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function storageGetItem(): Promise<void> {
@@ -41,6 +43,8 @@ export const AuthProvider: React.FC = ({ children }) => {
       if (token[1] && user[1]) {
         setData({ token: token[1], user: JSON.parse(user[1]) });
       }
+
+      setLoading(false);
     }
 
     storageGetItem();
@@ -66,7 +70,7 @@ export const AuthProvider: React.FC = ({ children }) => {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user: data.user, login, logout }}>
+    <AuthContext.Provider value={{ user: data.user, loading, login, logout }}>
       {children}
     </AuthContext.Provider>
   );
