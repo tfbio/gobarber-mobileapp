@@ -1,5 +1,6 @@
 import React from 'react';
-import { View, Button } from 'react-native';
+
+import { Container, Header, HeaderTitle, Username } from './styles';
 
 import { useAuth } from '../../hooks/authContext';
 
@@ -7,9 +8,14 @@ const Dashboard: React.FC = () => {
   const { logout } = useAuth();
 
   return (
-    <View>
-      <Button title="logout" onPress={logout} />
-    </View>
+    <Container>
+      <Header>
+        <HeaderTitle>
+          Welcome, {'\n'}
+          <Username>Fabio Oliveira</Username>
+        </HeaderTitle>
+      </Header>
+    </Container>
   );
 };
 

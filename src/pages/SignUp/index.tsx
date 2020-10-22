@@ -61,7 +61,6 @@ const SignUp: React.FC = () => {
 
         return;
       }
-      console.log(err);
 
       Alert.alert(
         'Register Error',
